@@ -1,52 +1,83 @@
 using System;
 using Persistence;
+using System.Collections.Generic;
 using MySql.Data.MySqlClient;
  namespace DAL 
- {
-     public class ItemDal{
-         public void SearchById(Item item){
-             string sql = "select * from Items where item_id = @ItemID";
-             MySqlConnection connection = DbHelper.GetConnection();
-             
-                 connection.Open();
-                 MySqlCommand command = new MySqlCommand(sql, connection);
-                 command.Parameters.AddWithValue("@ItemID", item.item_id);
-                 MySqlDataReader reader = command.ExecuteReader();
+ {  
+     public static class ItemFilter
+     {
+         public const int GET_ALL = 0;
+         public const int FILTER_BY_ITEM_NAME = 1;
+     }
+     public class ItemDal
+     {
+        string sql;
+        MySqlConnection connection = DbHelper.GetConnection();
+        
+        public Item SearchById(int id)
+        {
+             Item item = null;
+             try{
+                    connection.Open();
+                    sql = @"select * from Items where item_id = @ID;";
+                    MySqlCommand command = new MySqlCommand(sql, connection);
+                    command.Parameters.AddWithValue("@ID", id);
+                    MySqlDataReader reader = command.ExecuteReader();
                     if(reader.Read())
-                        {   Console.WriteLine("Item Info");
-                            Console.Write($" ID : {reader["item_id"],1}\n Name: {reader["item_name"],3}\n Price: {reader["item_price"],1}\n Quantity: {reader["item_quantity"],1}\n Desription: {reader["item_description"],3}\n");
-                        }
-                    reader.Close();
-                    connection.Close();
-                    else{
-                          Console.WriteLine("Don't found item");
-                          connection.Close();
-                    }
-            }
-
-
-            public void SearchByName(Item item){
-             MySqlConnection connection = DbHelper.GetConnection();
-                 connection.Open();
-                 using var command = new MySqlCommand();
-                 command.Connection = connection;
-                 command.CommandText = "select item_name as Name from Items where item_name like '@ItemName%';";
-                 command.Parameters.AddWithValue("@ItemName", item.item_name);
-                 using var reader = command.ExecuteReader();
-                if(reader.HasRows)
-                        { 
-                            while(reader.Read())
-                            {
-                                Console.WriteLine($"{reader["item_name"],3}");
-                            }  
-                        }  
-                        connection.Close(); 
-                else
-                {
-                    Console.WriteLine("Don't found item");
-                    connection.Close(); 
+                        {   
+                            item = GetItem(reader);
+                        }    
+                        reader.Close(); 
                 }
+            catch{
             }
+            finally{
+                connection.Close();
+            }
+            return item;
+         }
+         internal Item GetItem(MySqlDataReader reader)
+         {   
+             Item item = new Item();
+             item.item_id = reader.GetInt32("item_id");
+             item.item_name = reader.GetString("item_name");
+             item.item_price = reader.GetDouble("item_price");
+             item.item_quantity = reader.GetInt32("item_quantity");
+             item.item_description = reader.GetString("item_description");
+             return item;
+         }
+            public List<Item> GetItems(int itemFilter,Item item)
+            {
+                List<Item> lst = null;
+             try{
+                 connection.Open();
+                 MySqlCommand command = new MySqlCommand("", connection);
+                 switch(itemFilter)
+                    {
+                        case ItemFilter.GET_ALL:
+                        sql = @"select * from Items;";
+                        break;
+                        case ItemFilter.FILTER_BY_ITEM_NAME:
+                        sql = @"select * from Items where item_name like concat('%',@itemName,'%');";
+                        command.Parameters.AddWithValue("@itemName", item.item_name);
+                        break;
+                    }
+                    command.CommandText = sql;
+                    MySqlDataReader reader = command.ExecuteReader();
+                    lst = new List<Item>();
+                    while(reader.Read())
+                    {
+                        lst.Add(GetItem(reader));
+                    }
+                    reader.Close();
+                    }
+                catch{}
+                finally{
+                        connection.Close();
+                }
+                return lst;
+            }
+        
         }
         
     }

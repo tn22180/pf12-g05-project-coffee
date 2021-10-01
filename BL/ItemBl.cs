@@ -1,17 +1,21 @@
 using System;
 using Persistence;
 using DAL;
+using System.Collections.Generic;
 
 namespace BL
 {
    public class ItemBl
     {
-       private ItemDal dal = new ItemDal();
-       public void SearchById(Item item){
-          dal.SearchById(item);
+       private ItemDal idal = new ItemDal();
+       public Item SearchById(int id){
+          return idal.SearchById(id);
        }
-       public void SearchByName(Item item){
-          dal.SearchByName(item);
+       public List<Item> SearchByName(string name){
+          return idal.GetItems(ItemFilter.FILTER_BY_ITEM_NAME, new Item{item_name = name});
+       }
+       public List<Item> GetAll(){
+          return idal.GetItems(ItemFilter.GET_ALL, null);
        }
     }
 }
