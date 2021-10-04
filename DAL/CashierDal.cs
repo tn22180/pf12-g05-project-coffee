@@ -3,10 +3,12 @@ using Persistence;
 using MySql.Data.MySqlClient;
  namespace DAL {
      public class CashierDal{
+             MySqlConnection connection = DbHelper.GetConnection();
+             private MySqlDataReader reader;
+    
          public int Login(Cashier cashier){
              int login = 0;
              string sql = "select * from Cashiers where userName = @UserName and pass = @Password";
-             MySqlConnection connection = DbHelper.GetConnection();
              try{
                  connection.Open();
                  MySqlCommand command = new MySqlCommand(sql, connection);
@@ -28,5 +30,38 @@ using MySql.Data.MySqlClient;
                 }
             return login;
             }
+        public Cashier GetCashierById(int CashierId)
+        {
+            Cashier cas = null;
+            try{
+                connection.Open();
+                string sql = "select * from Cashiers where cashier_id = @CashierId;";
+                reader = (new MySqlCommand(sql, connection)).ExecuteReader();
+                if (reader.Read())
+                {
+                    cas = GetCashier(reader);
+                }
+                    reader.Close();
+                }
+                catch { }
+                finally
+                {
+                    connection.Close();
+                }
+                return cas;
+        
+        }
+        internal Cashier GetCashier(MySqlDataReader reader)
+         {   
+             Cashier cashier = new Cashier();
+             cashier.username = reader.GetString("userName");
+             cashier.password = reader.GetString("pass");
+             cashier.cashier_id = reader.GetInt32("cashier_id");
+             cashier.cashier_name = reader.GetString("cashier_name");
+             cashier.phone = reader.GetString("phone");
+             cashier.address = reader.GetString("address");
+             return cashier;
+         }
+            
         }
     }

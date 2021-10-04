@@ -10,5 +10,8 @@ namespace BL
        public int Login(Cashier cashier){
            return dal.Login(cashier);
        }
+       public Cashier GetCashierInfo(int id){
+          return dal.GetCashierById(id);
+       }
     }
 }

@@ -16,9 +16,10 @@ namespace ConsoleAppPL
             Console.Write("Input Password : ");
             string pass = GetPassword();
             Console.WriteLine();
-            Cashier cashier = new Cashier(){username = userName, password = pass};
+            Cashier cashier = new Cashier(){username = userName, password = pass, cashier_id = 1};
             CashierBl bl = new CashierBl();
             ItemBl ibl = new ItemBl();
+            OrderBl obl = new OrderBl();
             List<Item> lst ;
                 int login = bl.Login(cashier);
                 if(login <= 0){
@@ -82,6 +83,38 @@ namespace ConsoleAppPL
                     }while(childChoose != 4);
                     break;
                     case 2:
+                        Order order = new Order();
+                        char c;
+                            // insert table-number
+                            Console.Write("Input Table : ");
+                            int tab = Convert.ToInt32(Console.ReadLine());
+                            order.table = new TableNumber(){table_number = tab};
+                            //  insert CashierInfo
+                            Console.Write("Input Id Cashier order : ");
+                            int CasId;
+                            if(Int32.TryParse(Console.ReadLine(), out CasId))
+                            {
+                                Cashier cas = bl.GetCashierInfo(CasId);
+                                order.cashierInfo = cas;
+                            }
+                            
+                            do{
+                            Console.Write("Input id item want to order : ");
+                            int itemID;
+                            if(Int32.TryParse(Console.ReadLine(), out itemID))
+                            {
+                                order.listItem.Add(ibl.SearchById(itemID));
+                            }
+                            Console.Write("Input quantity item: ");
+                            int quantity;
+                            if(Int32.TryParse(Console.ReadLine(), out quantity))
+                            {
+                                order.listItem[0].item_quantity = quantity;
+                            }
+                            Console.WriteLine("Do you want to be continue ? (Y/N) : ");
+                            c = Convert.ToChar(Console.ReadLine());
+                        }while (c == 'y' || c == 'Y');
+                        Console.WriteLine("Create Order: " + (obl.CreateOrder(order) ? "completed!" : "not complete!")); 
                     break;
                 }
                 
