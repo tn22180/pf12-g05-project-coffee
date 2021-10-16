@@ -39,11 +39,11 @@ using MySql.Data.MySqlClient;
          internal Item GetItem(MySqlDataReader reader)
          {   
              Item item = new Item();
-             item.item_id = reader.GetInt32("item_id");
-             item.item_name = reader.GetString("item_name");
-             item.item_price = reader.GetDouble("item_price");
-             item.item_quantity = reader.GetInt32("item_quantity");
-             item.item_description = reader.GetString("item_description");
+             item.ItemId = reader.GetInt32("item_id");
+             item.ItemName = reader.GetString("item_name");
+             item.ItemPrice = reader.GetDouble("item_price");
+             item.ItemQuantity = reader.GetInt32("item_quantity");
+             item.ItemDescription = reader.GetString("item_description");
              return item;
          }
             public List<Item> GetItems(int itemFilter,Item item)
@@ -59,7 +59,7 @@ using MySql.Data.MySqlClient;
                         break;
                         case ItemFilter.FILTER_BY_ITEM_NAME:
                         sql = @"select * from Items where item_name like concat('%',@itemName,'%');";
-                        command.Parameters.AddWithValue("@itemName", item.item_name);
+                        command.Parameters.AddWithValue("@itemName", item.ItemName);
                         break;
                     }
                     command.CommandText = sql;

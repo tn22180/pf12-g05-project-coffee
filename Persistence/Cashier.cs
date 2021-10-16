@@ -3,12 +3,12 @@
 namespace Persistence
 {
  public class Cashier{
-     public int cashier_id {set;get;}
-     public string username {set;get;}
-     public string password {set;get;}
-     public string cashier_name {set;get;}
-     public string phone {set;get;}
-     public string address {set;get;}
+     public int CashierId {set;get;}
+     public string Username {set;get;}
+     public string Password {set;get;}
+     public string CashierName {set;get;}
+     public string Phone {set;get;}
+     public string Address {set;get;}
      public int Role{set;get;}
 
      public static int CASHIER_ROLE = 1;

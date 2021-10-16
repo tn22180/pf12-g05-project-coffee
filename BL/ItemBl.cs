@@ -12,7 +12,7 @@ namespace BL
           return idal.SearchById(id);
        }
        public List<Item> SearchByName(string name){
-          return idal.GetItems(ItemFilter.FILTER_BY_ITEM_NAME, new Item{item_name = name});
+          return idal.GetItems(ItemFilter.FILTER_BY_ITEM_NAME, new Item{ItemName = name});
        }
        public List<Item> GetAll(){
           return idal.GetItems(ItemFilter.GET_ALL, null);

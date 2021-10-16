@@ -4,8 +4,8 @@ namespace Persistence{
         public const int EMPTY = 1;
         public const int NO_EMPTY = 2;
     }
-    public class TableNumber{
-        public int table_number{set;get;}
-        public int ? table_status{set;get;}
+    public class TableNumbers{
+        public int TableNumber{set;get;}
+        public int ? TableStatus{set;get;}
     }
 }

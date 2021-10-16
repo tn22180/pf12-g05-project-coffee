@@ -7,28 +7,38 @@ namespace Persistence{
     }
 
     public class Order{
-        public int order_id {set;get;}
-        public DateTime order_date {set;get;}
-        public int ? order_status {set;get;}
-        public Cashier cashierInfo{set;get;}
-        public TableNumber table {set;get;} 
-        public List<Item> listItem {set;get;}
+        public int OrderId {set;get;}
+        public DateTime OrderDate {set;get;}
+        public int ? OrderStatus {set;get;}
+        public Cashier CashierInfo{set;get;}
+        public TableNumbers Table {set;get;} 
+        public List<Item> ListItem {set;get;}
         public Item this[int index]
         {
             get
             {
-                if (listItem == null || listItem.Count == 0 || index < 0 || listItem.Count < index) return null;
-                return listItem[index];
+                if (ListItem == null || ListItem.Count == 0 || index < 0 || ListItem.Count < index) return null;
+                return ListItem[index];
             }
             set
             {
-                if (listItem == null) listItem = new List<Item>();
-                listItem.Add(value);
+                if (ListItem == null) ListItem = new List<Item>();
+                ListItem.Add(value);
             }
         }
         public Order()
         {
-            listItem = new List<Item>();
+            ListItem = new List<Item>();
+        }
+        public override bool Equals(object obj){
+            if(obj is Order){
+                return ((Order)obj).OrderId.Equals(OrderId);
+            }
+            return false;
+        }
+
+        public override int GetHashCode(){
+            return OrderId.GetHashCode();
         }
     }
 }

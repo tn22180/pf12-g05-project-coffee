@@ -1,10 +1,10 @@
 using System;
 namespace Persistence{
     public class Item{
-        public int item_id{set;get;}
-        public string item_name{set;get;}
-        public double item_price{set;get;}
-        public int item_quantity{set;get;}
-        public string item_description{set;get;}
+        public int ItemId{set;get;}
+        public string ItemName{set;get;}
+        public double ItemPrice{set;get;}
+        public int ItemQuantity{set;get;}
+        public string ItemDescription{set;get;}
     }
 }

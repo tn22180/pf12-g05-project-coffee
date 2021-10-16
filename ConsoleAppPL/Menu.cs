@@ -4,16 +4,21 @@ using BL;
 namespace ConsoleAppPL
 {
     public class Menu{
+       public string logo = @"
+        /  __ \      / _|/ _|          |_   _|                 | | | |      
+        | /  \/ ___ | |_| |_ ___  ___    | |_   _  __ _ _ __   | |_| | __ _ 
+        | |    / _ \|  _|  _/ _ \/ _ \   | | | | |/ _` | '_ \  |  _  |/ _` |
+        | \__/\ (_) | | | ||  __/  __/   | | |_| | (_| | | | | | | | | (_| |
+        \____/ \___/|_| |_| \___|\___|   \_/\__,_|\__,_|_| |_| \_| |_/\__,_| "; 
         public short MainMenu(){
             short choice = 0;
-            string line = "=======================================================";
+            string line = "===================================================================================";
+            Console.WriteLine(line);                                    
+            Console.WriteLine(logo);
             Console.WriteLine(line);
-            Console.WriteLine("COFFE SELLING MANAGEMENT");
-            Console.WriteLine(line);
-            Console.WriteLine("1. Coffee and Food Management");
-            Console.WriteLine("2. Order");
-            Console.WriteLine("3. Print Invoice");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("        1. Coffee and Drinks Management");
+            Console.WriteLine("        2. Order");
+            Console.WriteLine("        3. Payment");
             Console.WriteLine(line);
             do
             {
@@ -30,14 +35,15 @@ namespace ConsoleAppPL
         }
         public short MenuChild(){
             short choice = 0;
-            string line = "=======================================================";
+            string line = "===================================================================================";
             Console.WriteLine(line);
+             Console.WriteLine(logo);
             Console.WriteLine("Coffee and Food Management");
             Console.WriteLine(line);
-            Console.WriteLine("1. Search Item By Id");
-            Console.WriteLine("2. Search Item by Name");
-            Console.WriteLine("3. Display All Item");
-            Console.WriteLine("4. Exit");
+            Console.WriteLine("        1. Search Item By Id");
+            Console.WriteLine("        2. Search Item by Name");
+            Console.WriteLine("        3. Display All Item");
+            Console.WriteLine("        4. Exit");
             Console.WriteLine(line);
             do
             {
