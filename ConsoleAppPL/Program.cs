@@ -2,6 +2,7 @@
 using Persistence;
 using System.Collections.Generic;
 using BL;
+using System.Globalization;
 
 namespace ConsoleAppPL
 {
@@ -11,6 +12,7 @@ namespace ConsoleAppPL
         {   
              string logo1 = @"
  =============================================================================
+      _ _ _         _   _            _ _ _                   _   _
      /  __ \      / _|/ _|          |_   _|                 | | | |      
      | /  \/ ___ | |_| |_ ___  ___    | |_   _  __ _ _ __   | |_| | __ _ 
      | |    / _ \|  _|  _/ _ \/ _ \   | | | | |/ _` | '_ \  |  _  |/ _` |
@@ -40,7 +42,8 @@ namespace ConsoleAppPL
             ItemBl ibl = new ItemBl();
             OrderBl obl = new OrderBl();
             List<Item> lst ;
-            int login;
+            Cashier cashier;
+            var money  = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
             Console.WriteLine(logo1);
             do{
             Console.WriteLine(line);
@@ -49,14 +52,14 @@ namespace ConsoleAppPL
             string userName = CheckUserName();
             string pass = CheckPass();
             Console.WriteLine();
-            Cashier cashier = new Cashier(){Username = userName, Password = pass};
-                 login = bl.Login(cashier);
-                if(login <= 0){
+            // cashier = new Cashier(){Username = userName, Password = pass};
+                 cashier = bl.Login(userName, pass);
+                if(cashier.Role <= 0){
                     Console.WriteLine("Can't login to System, Try again...");
                      }
-            }while(login <= 0);  
+            }while(cashier.Role <= 0);  
                 
-                if(login > 0){
+                if(cashier.Role > 0){
                 do{
                 Menu menu = new Menu();
                 mainChoose = menu.MainMenu();
@@ -94,23 +97,52 @@ namespace ConsoleAppPL
                                 Console.ReadLine();
                                 break;
                             case 2:
-                                Console.Write("Enter name item you want to search: ");
-                                string name = Console.ReadLine();
-                                lst = ibl.SearchByName(name);
-                                 Console.WriteLine(" | ID | Name Item          | Price  | Quantity | Description             |");
-                                foreach(Item i in lst){
-                                        Console.WriteLine(" | {0,-2} | {1,-18} | {2,-6} | {3,-8} | {4,-23} |", i.ItemId, i.ItemName, i.ItemPrice, i.ItemQuantity, i.ItemDescription);
+                                bool checkName = true;
+                                string name = "";
+                                do{
+                                    try{
+                                            Console.Write("Enter name item you want to search: ");
+                                             name = Console.ReadLine();
+                                            lst = ibl.SearchByName(name);
+                                            if(lst.Count == 0 || lst == null)
+                                            {
+                                                Console.WriteLine("Don't found name item : "+name);
+                                                Console.WriteLine("Try again .");
+                                                checkName = false;
+                                            }
+                                            else{
+                                                Console.WriteLine(" +------------------------------------------------------------------------------+");
+                                                Console.WriteLine(" | ID | Name Item                 | Price    | Quantity | Description           |");
+                                                Console.WriteLine(" +------------------------------------------------------------------------------+");
+                                                
+                                                foreach(Item i in lst){
+                                                        Console.WriteLine(" | {0,-2} | {1,-25} | {2,-6} | {3,-8} | {4,-21} |", i.ItemId, i.ItemName, String.Format(money ,"{0:c}", i.ItemPrice), i.ItemQuantity, i.ItemDescription);
+
+                                                    }
+                                                        Console.WriteLine(" +------------------------------------------------------------------------------+");
+                                                Console.WriteLine("\n    Press Enter key to back menu...");
+                                                Console.ReadLine();
+                                                checkName = true;
+                                            }
+                                    }catch{
+                                        Console.WriteLine("Don't found name item : "+name);
+                                        Console.WriteLine("Try again .");
                                     }
-                                Console.WriteLine("\n    Press Enter key to back menu...");
-                                Console.ReadLine();
+                                    
+                                }while(checkName != true);
                                     break;
                             case 3:
                                 lst = ibl.GetAll();
-                                 Console.WriteLine(" | ID | Name Item          | Price  | Quantity | Description             |");
+                                 Console.WriteLine(" +------------------------------------------------------------------------------+");
+                                 Console.WriteLine(" | ID | Name Item                 | Price    | Quantity | Description           |");
+                                 Console.WriteLine(" +------------------------------------------------------------------------------+");
+                                
                                 foreach(Item i in lst)
                                 {
-                                Console.WriteLine(" | {0,-2} | {1,-18} | {2,-6} | {3,-8} | {4,-23} |", i.ItemId, i.ItemName, i.ItemPrice, i.ItemQuantity, i.ItemDescription);
+                                Console.WriteLine(" | {0,-2} | {1,-25} | {2,-6} | {3,-8} | {4,-21} |", i.ItemId, i.ItemName, String.Format(money, "{0:c}", i.ItemPrice), i.ItemQuantity, i.ItemDescription);
                                 }
+                                 Console.WriteLine(" +------------------------------------------------------------------------------+");
+
                                 Console.WriteLine("\n    Press Enter key to back menu...");
                                 Console.ReadLine();
                                 break;
@@ -125,124 +157,209 @@ namespace ConsoleAppPL
                         char c;
                             // insert table-number
                             int tab = -1;
+                            bool checkTabEmpty = true;
                           do{
-                            ltb = obl.GetAllTable(1);
+                            // ltb = obl.GetAllTableByStatus(OrderStatus.CREATE_NEW_ORDER);
+                           ltb =  obl.GetAllTable();
                              Console.WriteLine("Empty Tables:     ");
                             foreach(TableNumbers t in ltb){
-                                        Console.Write(t.TableNumber+"\t");
+                                         Console.Write("["+t.TableNumber+"]"+"\t");
                             }
                             try{
-                                Console.Write("Choose Table: ");
+                                Console.Write("\nChoose Table : ");
                                  tab = Int32.Parse(Console.ReadLine());
                                 
-                                TableNumbers table1 = obl.GetTableByStatus(tab);
-                                order.Table = table1;
-                                if(order.Table.TableStatus == TableStatus.NO_EMPTY)
-                                {
-                                    Console.WriteLine("The table is booked! Please Choose another table.");
-                                }
-                            }
-                            catch{
-                                Console.WriteLine("your choose is wrong! Please Choose again.");
-                                continue;
-                            }
-                          }while( tab < 0 || tab > 6 || order.Table.TableStatus != 1);
-                        //Insert id
-                            int CasId = 0;
-                          do{
-
-                            try{
-                                Console.Write("Input Id Cashier order : ");
-                                CasId = Int32.Parse(Console.ReadLine());
-                                Cashier cas = bl.GetCashierInfo(CasId);
-                                order.CashierInfo = cas;
-                                if(cas == null)
-                                {
-                                Console.WriteLine("Don't have id Cashier : "+CasId);
-                                Console.WriteLine("Input Again ....");
-                                }
-                            }
-                            catch{
-                                Console.WriteLine("Don't have id Cashier : "+CasId);
-                                Console.WriteLine("Input Again ....");
-                                continue;
-                            }
-                          }while(CasId != 1 && CasId != 2);
-                        //insert item
-                            do{
-                                int itemID = 0;
-                                bool check = true;
-                                Item i = null;
-                                do{
-                                    try{
-                                        Console.Write("Input id item want to order : ");
-                                        itemID = Int32.Parse(Console.ReadLine());
-                                        i = ibl.SearchById(itemID);
-                                        if(i == null)
-                                        {
-                                            Console.WriteLine("Don't have id Item : "+itemID);
-                                            Console.WriteLine("Input Again ....");
-                                            check = false;
-                                        }
-                                        else{
-                                            order.ListItem.Add(i);
-                                            check = true;
-                                        }
+                                TableNumbers table1 = obl.GetTableByNumberr(tab);
+                                if(table1.TableStatus == TableStatus.NO_EMPTY)
+                                {  Order order1 = new Order();
+                                    
+                                    order1 = obl.GetOrderByTableAndStatus(tab,OrderStatus.ORDER_INPROGRESS);
+                                    order1.ListItem = order.ListItem;
+                                     do{
+                                         
+                                        int itemID = 0;
+                                        bool check = true;
+                                        Item i = null;
+                                        do{
+                                            try{
+                                                Console.Write("Input id item want to order : ");
+                                                itemID = Int32.Parse(Console.ReadLine());
+                                                i = ibl.SearchById(itemID);
+                                                if(i == null)
+                                                {
+                                                    Console.WriteLine("Don't have id Item : "+itemID);
+                                                    Console.WriteLine("Input Again ....");
+                                                    check = false;
+                                                }
+                                    
+                                                else{
+                                                   
+                                                    check = true;
+                                                }
+                                                
+                                            }catch{
+                                                Console.WriteLine("Don't have id Item : "+itemID);
+                                                Console.WriteLine("Input Again ....");
+                                                continue;
+                                            }
+                                    
+                                        }while(check == false);
+                                        bool checkQuantity = true;
+                                        int quantity = 0;
+                                        do{
+                                            bool checkitem = false;
+                                            int j = 0;
+                                            
+                                            try{
+                                                Console.Write("Input quantity: ");
+                                                quantity = Int32.Parse(Console.ReadLine());
+                                                if(i.ItemQuantity < quantity)
+                                                {
+                                                    Console.WriteLine("The quantity you need in stock is out");
+                                                    checkQuantity = false;
+                                                }
+                                                else{
                                         
-                                    }catch{
-                                         Console.WriteLine("Don't have id Item : "+itemID);
-                                         Console.WriteLine("Input Again ....");
-                                         continue;
-                                    }
-                               
-                                }while(check == false);
-                                bool checkQuantity = true;
-                                int quantity = 0;
-                                do{
-                                    try{
-                                        Console.Write("Input quantity: ");
-                                        quantity = Int32.Parse(Console.ReadLine());
-                                        if(i.ItemQuantity < quantity)
-                                        {
-                                            Console.WriteLine("The quantity you need in stock is out");
-                                            checkQuantity = false;
-                                        }
-                                        else{
-                                            i.ItemQuantity = quantity;
-                                            checkQuantity = true;
-                                        }
-                                    }catch{
-                                        Console.WriteLine("Your choice is wrong..!");
-                                        Console.WriteLine("Input Again ....");
-                                        continue;
-                                    }
-                                }while(checkQuantity != true);
-                                    Console.Write("Do you want to be continue ? (Y/N) : ");
-                                    c = Convert.ToChar(Console.ReadLine());
-                            }while (c == 'y' || c == 'Y');
-                            
-                                Console.WriteLine("Create Order: " + (obl.CreateOrder(order) ? "completed!" : "not complete!")); 
-                                 Console.WriteLine("\n    Press Enter key to back menu...");
-                                    Console.ReadLine();
+                                                   for(j = 0;j < order1.ListItem.Count;j++)
+                                                    {
+                                                        if(itemID == order1.ListItem[j].ItemId)
+                                                        {
+                                                            checkitem = true;
+                                                            order1.ListItem[j].ItemQuantity += quantity;
 
+                                                        }
+                                                    }
+                                                    if(!checkitem)
+                                                    {   
+                                                        order1.ListItem.Add(i);
+                                                        i.ItemQuantity = quantity;
+                                                    }
+                                                    checkQuantity = true;
+                                                }
+                                            }catch{
+                                                Console.WriteLine("Quantity must to > 0..!");
+                                                Console.WriteLine("Input Again ....");
+                                                continue;
+                                            }
+                                        }while(checkQuantity != true);
+                                            Console.Write("Do you want to be continue ? (Y/N) : ");
+                                            c = Convert.ToChar(Console.ReadLine());
+                                    }while (c == 'y' || c == 'Y');
+                                    Console.WriteLine("Update Order: " + (obl.UpdateOrder(order1) ? "completed!" : "not complete!")); 
+                                }
+                                else{
+                                   order.Table = table1; 
+                                   checkTabEmpty = true;
+                                    // insert cashierinfo
+                                    order.CashierInfo = cashier;
+                                //insert item
+                                    do{
+                                        int itemID = 0;
+                                        bool check = true;
+                                        Item i = null;
+                                        do{
+                                            try{
+                                                Console.Write("Input id item want to order : ");
+                                                itemID = Int32.Parse(Console.ReadLine());
+                                                i = ibl.SearchById(itemID);
+                                                Console.WriteLine(i.ItemName + ": " +String.Format(money, "{0:c}", i.ItemPrice));
+                                               
+                                                if(i == null)
+                                                {
+                                                    Console.WriteLine("Don't have id Item : "+itemID);
+                                                    Console.WriteLine("Input Again ....");
+                                                    check = false;
+                                                }
+                                                else{
+                                                    check = true;
+                                                }
+                                                
+                                            }catch{
+                                                Console.WriteLine("Don't have id Item : "+itemID);
+                                                Console.WriteLine("Input Again ....");
+                                                continue;
+                                            }
+                                    
+                                        }while(check == false);
+                                        bool checkQuantity = true;
+                                        int quantity = 0;
+                                        do{
+                                            
+                                            int j = 0;
+                                            bool checkitem = false;
+                                            try{
+                                                Console.Write("Input quantity: ");
+                                                quantity = Int32.Parse(Console.ReadLine());
+                                                if(i.ItemQuantity < quantity)
+                                                {
+                                                    Console.WriteLine("The quantity you need in stock is out");
+                                                    checkQuantity = false;
+                                                }
+                                                else if(quantity <= 0)
+                                                {
+                                                     Console.WriteLine("Quantity must to > 0..!");
+                                                     checkQuantity = false;
+                                                }
+                                                else{
+                                                    for(j = 0;j < order.ListItem.Count;j++)
+                                                    {
+                                                        if(itemID == order.ListItem[j].ItemId)
+                                                        {
+                                                            checkitem = true;
+                                                            order.ListItem[j].ItemQuantity += quantity;
+
+                                                        }
+                                                    }
+                                                    if(!checkitem)
+                                                    {   
+                                                        order.ListItem.Add(i);
+                                                        i.ItemQuantity = quantity;
+                                                    }
+                                                    checkQuantity = true;
+                                                }
+                                                
+                                            }catch{
+                                                Console.WriteLine("Quantity must to > 0..!");
+                                                Console.WriteLine("Input Again ....");
+                                                continue;
+                                            }
+                                        }while(checkQuantity != true);
+                                            Console.Write("Do you want to be continue ? (Y/N) : ");
+                                            c = Convert.ToChar(Console.ReadLine());
+                                    }while (c == 'y' || c == 'Y');
+                                    
+                                        Console.WriteLine("Create Order: " + (obl.CreateOrder(order) ? "completed!" : "not complete!")); 
+                                        Console.WriteLine("\n    Press Enter key to back menu...");
+                                            Console.ReadLine();
+                                        }
+                                    }
+                                    catch{
+                                        Console.WriteLine("your choose is wrong! Please Choose again.");
+                                       break;
+                                    }
+                          }while( checkTabEmpty != true || tab == 0);
+                        // insert cashierinfo
                     break;
                     case 3:
                         Console.WriteLine(logo3);
                         Console.WriteLine(line);
-                        List<TableNumbers> ltb1 ;        
+                        List<TableNumbers> ltb1 ; 
+                        Order orderInfo;
+                        
+                        // do{ 
                         int tabl = 0;
-                            ltb1 = obl.GetAllTable(2);
+                            ltb1 = obl.GetAllTableByStatus(OrderStatus.ORDER_INPROGRESS);
                             Order orders = new Order();
                             Console.WriteLine("The Tables is booked :     ");
                                 foreach(TableNumbers t in ltb1){
-                                            Console.Write(t.TableNumber+"\t");
+                                            Console.Write("["+t.TableNumber+"]"+"\t");
                             }
                             bool checkTab = true;
                             do{
                                 try{
-                                        Console.Write("\nChoose Table: ");
+                                        Console.Write("\nChoose Table Or enter '0' to exit : ");
                                         tabl = Int32.Parse(Console.ReadLine());
-                                        TableNumbers table2 = obl.GetTableByStatus(tabl);
+                                        TableNumbers table2 = obl.GetTableByNumberr(tabl);
                                         if(table2.TableStatus == 1)
                                         {
                                             Console.WriteLine("The table is not booked!");
@@ -252,43 +369,90 @@ namespace ConsoleAppPL
                                         {
                                             orders.Table = table2;
                                             checkTab = true;
-                                        }
+                                            orderInfo = obl.GetOrderByTableAndStatus(tabl,OrderStatus.ORDER_INPROGRESS);
+                                    if(orderInfo != null)
+                                    {
+                                        Console.WriteLine("===========================================================");
+                                        Console.WriteLine("|                        INVOICE                          |");                      
+                                        Console.WriteLine("===========================================================");
+                                        Console.WriteLine("| OrderId : "+ orderInfo.OrderId+"                                            |");
+                                        Console.WriteLine("| Table : "+ orderInfo.Table.TableNumber+ "    Date Time: "+ orderInfo.OrderDate+"             |");
                                     }
-                                catch{
-                                        Console.WriteLine("your choose is wrong! Please Choose again.");
-                                        continue;
+                                
+                                List<OrderDetail> od = obl.GetOrderDetailByOrderId(orderInfo.OrderId);   
+                                double total = 0,totalMoney = 0;
+                                if(od != null){
+                                    Console.WriteLine("+---------------------------------------------------------+");
+                                    Console.WriteLine("| Name Item          | Price    | Quantity | Total        |");
+                                    Console.WriteLine("+---------------------------------------------------------+");
+                                    foreach(var i in od)
+                                    {
+                                        Console.WriteLine("| {0,-18} | {1,-6} | {2,-8} | {3,-11}  |", i._ItemName, String.Format(money, "{0:c}", i._ItemPrice), i._ItemQuantity, String.Format(money ,"{0:c}", total = (i._ItemQuantity*i._ItemPrice)));
+                                        Console.WriteLine("+---------------------------------------------------------+");
+                                        totalMoney += total;
+                                    }
+                                
+                                    Console.WriteLine("| Total Money                              | {0,-12} |",String.Format(money, "{0:c}", totalMoney));;
+                                    Console.WriteLine("+---------------------------------------------------------+");
                                 }
-                            }while(checkTab != true);
-                            Order orderInfo = obl.GetOrderByTab(tabl,2);
-                            if(orderInfo != null)
-                            {   Console.WriteLine("==============================================================");
-                                Console.WriteLine("                       Coffee Tuan Ha");
-                                Console.WriteLine("==============================================================");
-                                Console.WriteLine("|                           INVOICE                           |");                      
-                                Console.WriteLine("==============================================================");
-                                Console.WriteLine(" ID: " + orderInfo.CashierInfo.CashierId);
-                                Console.WriteLine(" Name: " + orderInfo.CashierInfo.CashierName    +"     Phone: "+ orderInfo.CashierInfo.Phone);
-                                Console.WriteLine(" OrderId : "+ orderInfo.OrderId);
-                                Console.WriteLine(" Table : "+ orderInfo.Table.TableNumber+ "    Date Time: "+ orderInfo.OrderDate);
+                           
+                                Console.WriteLine("1. Payment");
+                                Console.WriteLine("2. Back to Main Menu");
+                                int choice = 0;
+                                do
+                                {
+                                    Console.Write("Your Choice :");
+                                    try{
+                                        choice = Int16.Parse(Console.ReadLine());
+                                    
+                                
+                                switch(choice)
+                                {
+                                case 1:
+                                
+                                        
+                                        Console.WriteLine("===========================================================");
+                                        Console.WriteLine("|                     Coffee Tuan Ha                      |");
+                                        Console.WriteLine("===========================================================");
+                                        Console.WriteLine("|                        INVOICE                          |");                      
+                                        Console.WriteLine("===========================================================");
+                                        Console.WriteLine("| ID: " + orderInfo.CashierInfo.CashierId+"                                                   |");
+                                        Console.WriteLine("| Name: " + orderInfo.CashierInfo.CashierName    +"     Phone: "+ orderInfo.CashierInfo.Phone+"             |");
+                                        Console.WriteLine("| OrderId : "+ orderInfo.OrderId+"                                            |");
+                                        Console.WriteLine("| Table : "+ orderInfo.Table.TableNumber+ "    Date Time: "+ orderInfo.OrderDate+"             |");
+                                        Console.WriteLine("+---------------------------------------------------------+");
+                                        Console.WriteLine("| Name Item          | Price    | Quantity | Total        |");
+                                        Console.WriteLine("+---------------------------------------------------------+");
+                                        foreach(var i in od)
+                                        {
+                                            Console.WriteLine("| {0,-18} | {1,-6} | {2,-8} | {3,-11}  |", i._ItemName, String.Format(money, "{0:c}", i._ItemPrice), i._ItemQuantity, String.Format(money ,"{0:c}", total = (i._ItemQuantity*i._ItemPrice)));
+                                            Console.WriteLine("+---------------------------------------------------------+");
+                                            totalMoney += total;
+                                        }
+                                    
+                                        Console.WriteLine("| Total Money                              | {0,-12} |",String.Format(money, "{0:c}", totalMoney));;
+                                        Console.WriteLine("+---------------------------------------------------------+");
+                                        Console.WriteLine("          Thank you for buying our products ... ");
+                                        Console.WriteLine("\n    Press Enter key to back menu...");
+                                        Console.ReadLine();
+                                        obl.Update(orderInfo.OrderId,orderInfo.Table.TableNumber);
+                                break;
+                                }
+                                }
+                                catch{
+                                        Console.WriteLine("Your choice is wrong!");
+                                        continue;
+                                    }
+                            }while(choice <=1 && choice > 2);
+                                }
+                                }
+                                catch{
+                                    Console.WriteLine("your choose is wrong! Please Choose again.");
+                                    break;
+                                }
+                            }while(checkTab != true || tabl == 0);
                             
-                            }
-                        
-                        List<OrderDetail> od = obl.GetOrderDetailByIds(orderInfo.OrderId);   
-                        double total = 0,totalMoney = 0;
-                        if(od != null){
-                            Console.WriteLine("| Name Item          | Price  | Quantity | Total     |");
-                             foreach(var i in od)
-                            {
-                                Console.WriteLine("| {0,-18} | {1,-6} | {2,-8} | {3,-8}  |", i._ItemName, i._ItemPrice, i._ItemQuantity, total = (i._ItemQuantity*i._ItemPrice));
-                                totalMoney += total;
-                            }
-                            Console.WriteLine();
-                            Console.WriteLine("| Total Money                            | {0,-9} |",totalMoney);;
-                            Console.WriteLine("    Thank you for buying our products ... ");
-                        }
-                    
-                        Console.WriteLine("\n    Press Enter key to back menu...");
-                        Console.ReadLine();
+                          
                     break;
                 }
                 }while(mainChoose != 4);
@@ -327,7 +491,7 @@ namespace ConsoleAppPL
                 useName = Console.ReadLine();
                 if(useName.Length < 6)
                 {
-                    Console.WriteLine("UserName must be more than 6 characters! Try again ...");
+                    Console.WriteLine("   UserName must be more than 6 characters! Try again ...");
                 }
             }while(useName.Length < 6);
             return useName;
@@ -340,7 +504,7 @@ namespace ConsoleAppPL
                 pass = GetPassword();
                 if(pass.Length < 6)
                 {
-                    Console.WriteLine("\nPassword must be more than 6 characters! Try again ...");
+                    Console.WriteLine("\n   Password must be more than 6 characters! Try again ...");
                 }
             }while(pass.Length < 6);
             return pass;

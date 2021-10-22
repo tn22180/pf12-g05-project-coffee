@@ -5,6 +5,7 @@ namespace ConsoleAppPL
 {
     public class Menu{
        public string logo = @"
+         _ _ _         _   _            _ _ _                   _   _
         /  __ \      / _|/ _|          |_   _|                 | | | |      
         | /  \/ ___ | |_| |_ ___  ___    | |_   _  __ _ _ __   | |_| | __ _ 
         | |    / _ \|  _|  _/ _ \/ _ \   | | | | |/ _` | '_ \  |  _  |/ _` |
@@ -17,8 +18,9 @@ namespace ConsoleAppPL
             Console.WriteLine(logo);
             Console.WriteLine(line);
             Console.WriteLine("        1. Coffee and Drinks Management");
-            Console.WriteLine("        2. Order");
-            Console.WriteLine("        3. Payment");
+            Console.WriteLine("        2. Create Order");
+            Console.WriteLine("        3. Order Management");
+            Console.WriteLine("        4. Exit");
             Console.WriteLine(line);
             do
             {

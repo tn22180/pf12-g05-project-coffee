@@ -7,30 +7,29 @@ using MySql.Data.MySqlClient;
              MySqlConnection connection = DbHelper.GetConnection();
              private MySqlDataReader reader;
     
-         public int Login(Cashier cashier)
+         public Cashier Login(string username, string pass)
          {
-             int login = 0;
+             Cashier cashier = new Cashier();
              string sql = "select * from Cashiers where userName = @UserName and pass = @Password";
              try{
                  connection.Open();
                  MySqlCommand command = new MySqlCommand(sql, connection);
-                 command.Parameters.AddWithValue("@UserName", cashier.Username);
-                 command.Parameters.AddWithValue("@Password", Md5Algorithms.CreateMD5(cashier.Password));
+                 command.Parameters.AddWithValue("@UserName", username);
+                 command.Parameters.AddWithValue("@Password", Md5Algorithms.CreateMD5(pass));
                  reader = command.ExecuteReader();
                     if(reader.Read())
                         {
-                            login = reader.GetInt32("role");
+                            cashier = GetCashier(reader);
                         }
                     reader.Close();
-                    connection.Close();
                 }
-            catch{
-                login = -1;
+             catch(Exception e) { 
+                    Console.WriteLine(e);
                 }
             finally{
                 connection.Close();
                 }
-            return login;
+            return cashier;
         }
         public Cashier GetCashierById(int CashierId)
         {
@@ -48,7 +47,9 @@ using MySql.Data.MySqlClient;
                 }
                     reader.Close();
                 }
-                catch { }
+                catch(Exception e) { 
+                    Console.WriteLine(e);
+                }
                 finally
                 {
                     connection.Close();
@@ -65,6 +66,7 @@ using MySql.Data.MySqlClient;
              cashier.CashierName = reader.GetString("cashier_name");
              cashier.Phone = reader.GetString("phone");
              cashier.Address = reader.GetString("address");
+             cashier.Role = reader.GetInt32("role");
              return cashier;
             }
     }

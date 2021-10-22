@@ -13,28 +13,41 @@ namespace BL
             bool result = odl.CreateOrder(order);
             return result;
         }
-        public TableNumbers GetTableByStatus(int tab)
+        public TableNumbers GetTableByNumberr(int tab)
         {
             return odl.GetTableByNumber(tab);
         }
-        public List<TableNumbers> GetAllTable(int tabstatus)
+        public List<TableNumbers> GetAllTableByStatus(int tabstatus)
         {
-            return odl.GetTables(new TableNumbers(){TableStatus = tabstatus});
+            return odl.GetTablesByStatus(new TableNumbers(){TableStatus = tabstatus});
+        }
+        public List<TableNumbers> GetAllTable()
+        {   
+            return odl.GetAllTable();
+        }
+        public Order GetOrderByTableAndStatus( int tab, int sta){
+            return odl.GetOrderByTabAndStt(tab,sta);
+        }
+        public List<OrderDetail> GetOrderDetailByOrderId(int id)
+        {
+            return odl.GetOrderDetailById(id);
         }
         // public Order GetOrderByTables(int tab,int Orst)
         // {
         //     return odl.GetOrderByTable(tab,Orst);
         // }
-        public List<Order> GetAllOrders()
+        // public List<Order> GetAllOrders()
+        // {
+        //     return odl.GetAllOrder();
+        // }
+        public void Update(int Orid, int Tab)
         {
-            return odl.GetAllOrder();
+            odl.Update(Orid,Tab);
         }
-        public Order GetOrderByTab( int tab, int sta){
-            return odl.GetOrderByTable(tab,sta);
-        }
-        public List<OrderDetail> GetOrderDetailByIds(int id)
+        public bool UpdateOrder(Order order)
         {
-            return odl.GetOrderDetailById(id);
+            bool result = odl.UpdateOrder(order);
+            return result;
         }
     }
 }

@@ -1,0 +1,12 @@
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/bin/Release/net5.0/Persistence.deps.json
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/bin/Release/net5.0/Persistence.dll
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/bin/Release/net5.0/ref/Persistence.dll
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/bin/Release/net5.0/Persistence.pdb
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/obj/Release/net5.0/Persistence.csproj.AssemblyReference.cache
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/obj/Release/net5.0/Persistence.GeneratedMSBuildEditorConfig.editorconfig
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/obj/Release/net5.0/Persistence.AssemblyInfoInputs.cache
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/obj/Release/net5.0/Persistence.AssemblyInfo.cs
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/obj/Release/net5.0/Persistence.csproj.CoreCompileInputs.cache
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/obj/Release/net5.0/Persistence.dll
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/obj/Release/net5.0/ref/Persistence.dll
+/Users/nguyentuan/Desktop/CoffeeSellingSystem/Persistence/obj/Release/net5.0/Persistence.pdb

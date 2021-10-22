@@ -40,7 +40,6 @@ using MySql.Data.MySqlClient;
                     command.CommandText = "update Coffee_Tables set table_status = 2 where table_number = @number_table;";
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@number_table", order.Table.TableNumber);
-                    // command.Parameters.AddWithValue("@number", TableStatus.NO_EMPTY);
                     command.ExecuteNonQuery();
                     
                     // get cashier_info
@@ -71,10 +70,7 @@ using MySql.Data.MySqlClient;
                     reader.Close();
                     foreach(var item in order.ListItem)
                     {
-                        if(item.ItemId == null || item.ItemQuantity <= 0)
-                        {
-                            throw new Exception("Not Exists Item");
-                        }
+                    
                         command.CommandText = "select item_price from Items where item_id = @itemID";
                         command.Parameters.Clear();
                         command.Parameters.AddWithValue("@itemID", item.ItemId);
@@ -86,7 +82,7 @@ using MySql.Data.MySqlClient;
                         item.ItemPrice = reader.GetDouble("item_price");
                         reader.Close();
                     // insert to order detail
-                        command.CommandText = @"insert into OrderDetails(order_id,item_id,item_price,quantity) values (" + order.OrderId + ", " + item.ItemId + ", " + item.ItemPrice + ", " + item.ItemQuantity + ");";
+                        command.CommandText = @"insert into OrderDetails(order_id,item_id,item_price,quantity) values (" + order.OrderId + ", " + item.ItemId +  ", " + item.ItemPrice + ", " + item.ItemQuantity +");";
                         command.ExecuteNonQuery();
                     //update quantity of Items
                         command.CommandText = "update Items set item_quantity = item_quantity - @quantity where item_id = " + item.ItemId + ";";
@@ -144,6 +140,47 @@ using MySql.Data.MySqlClient;
             }
             return result; 
         }
+        public bool UpdateOrder(Order order)
+        {   
+            bool result = false;
+        try{
+            connection.Open();
+            MySqlCommand command = connection.CreateCommand();
+            command.Connection = connection;
+            foreach(var item in order.ListItem)
+                    {
+                       
+                        command.CommandText = "select item_price from Items where item_id = @itemID";
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@itemID", item.ItemId);
+                        MySqlDataReader reader = command.ExecuteReader();
+                        if(!reader.Read())
+                        {
+                            throw new Exception("Not Exists Item");
+                        }
+                        item.ItemPrice = reader.GetDouble("item_price");
+                        reader.Close();
+                    // insert to order detail
+                        command.CommandText = @"insert into OrderDetails(order_id,item_id,item_price,quantity) values (" + order.OrderId + ", " + item.ItemId + ", " + item.ItemPrice + ", " + item.ItemQuantity + ");";
+                        command.ExecuteNonQuery();
+                       
+                    //update quantity of Items
+                        command.CommandText = "update Items set item_quantity = item_quantity - @quantity where item_id = " + item.ItemId + ";";
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@quantity", item.ItemQuantity);
+                        command.ExecuteNonQuery();
+                        result = true;
+                    }
+        }catch(Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        finally{
+            connection.Close();
+        }
+        return result;
+
+        }
             internal TableNumbers GetTable(MySqlDataReader reader)
             {   
              TableNumbers tab = new TableNumbers();
@@ -151,7 +188,7 @@ using MySql.Data.MySqlClient;
              tab.TableStatus = reader.GetInt32("table_status");
              return tab;
             }
-            public List<TableNumbers> GetTables(TableNumbers tab)
+            public List<TableNumbers> GetTablesByStatus(TableNumbers tab)
             {
                 List<TableNumbers> lst = null;
                 try{
@@ -160,6 +197,31 @@ using MySql.Data.MySqlClient;
                     command.Connection = connection;
                     command.CommandText = "select * from Coffee_Tables where table_status = @status;";
                     command.Parameters.AddWithValue("@status",tab.TableStatus);
+                    MySqlDataReader reader = command.ExecuteReader();
+                    lst = new List<TableNumbers>();
+                    while(reader.Read())
+                    {
+                        lst.Add(GetTable(reader));
+                    }
+                    
+                    reader.Close();
+                    }
+                catch{}
+                finally{
+                        connection.Close();
+                }
+                return lst;
+
+                
+            }
+            public List<TableNumbers> GetAllTable()
+            {
+                List<TableNumbers> lst = null;
+                try{
+                    connection.Open();
+                    MySqlCommand command = connection.CreateCommand();
+                    command.Connection = connection;
+                    command.CommandText = "select * from Coffee_Tables ";
                     MySqlDataReader reader = command.ExecuteReader();
                     lst = new List<TableNumbers>();
                     while(reader.Read())
@@ -225,39 +287,39 @@ using MySql.Data.MySqlClient;
              }
              
 
-             public List<Order> GetAllOrder()
-             {
-                 List<Order> lso =null;
-                 try{
-                    connection.Open();
-                    MySqlCommand command = connection.CreateCommand();
-                    command.Connection = connection;
-                    command.CommandText= "select * from Orders;" ;
-                    command.Parameters.Clear();
-                    MySqlDataReader reader = command.ExecuteReader();
-                    lso = new List<Order>();
-                    while(reader.Read())
-                    {
-                       lso.Add(GetOrder(reader));
-                    }
-                    reader.Close();
-                    }
-                catch(Exception e){
-                    Console.WriteLine(e);
-                    }
+            //  public List<Order> GetAllOrder()
+            //  {
+            //      List<Order> lso =null;
+            //      try{
+            //         connection.Open();
+            //         MySqlCommand command = connection.CreateCommand();
+            //         command.Connection = connection;
+            //         command.CommandText= "select * from Orders;" ;
+            //         command.Parameters.Clear();
+            //         MySqlDataReader reader = command.ExecuteReader();
+            //         lso = new List<Order>();
+            //         while(reader.Read())
+            //         {
+            //            lso.Add(GetOrder(reader));
+            //         }
+            //         reader.Close();
+            //         }
+            //     catch(Exception e){
+            //         Console.WriteLine(e);
+            //         }
             
-                finally{
-                    connection.Close();
-                    }
-                return lso;
-            }
-             public Order GetOrderByTable( int tab, int sta)
+            //     finally{
+            //         connection.Close();
+            //         }
+            //     return lso;
+            // }
+             public Order GetOrderByTabAndStt( int tab, int sta)
              {
                  Order order = new Order();
                  try{
                      connection.Open();
                      MySqlCommand command = connection.CreateCommand();
-                     command.CommandText = "select * from Cashiers,Orders where Cashiers.cashier_id = Orders.cashier_id and  Orders.order_status = @sta and Orders.table_number = @tab;";
+                     command.CommandText = "select * from Cashiers,Orders where Cashiers.cashier_id = Orders.cashier_id and Orders.order_status = @sta and Orders.table_number = @tab;";
                     command.Parameters.Clear();
                     // command.Parameters.AddWithValue("@id",id);
                     command.Parameters.AddWithValue("@sta",sta);
@@ -269,20 +331,6 @@ using MySql.Data.MySqlClient;
                     }
                         reader.Close();
                 
-
-                    // update Tables;
-                    command.CommandText = "update Orders set order_status = 1 where order_id = @id";
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@id", order.OrderId);
-                    command.ExecuteNonQuery();
-
-
-                    //update number_table
-                    command.CommandText = "update Coffee_Tables set table_status = 1 where table_number = @number_table;";
-                    command.Parameters.Clear();
-                    command.Parameters.AddWithValue("@number_table", order.Table.TableNumber);
-                        // command.Parameters.AddWithValue("@number", TableStatus.NO_EMPTY);
-                     command.ExecuteNonQuery();
                  }  
                 catch(Exception e){
                     Console.WriteLine(e);
@@ -320,7 +368,34 @@ using MySql.Data.MySqlClient;
                     }
                 return ld;
             }
-            
+        public  void Update(int Orid, int Tab)
+        {   
+           
+
+            try{
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.Connection = connection;
+                command.CommandText = "update Orders set order_status = 1 where order_id = @id";
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@id", Orid);
+                command.ExecuteNonQuery();
+
+
+                        //update number_table
+                command.CommandText = "update Coffee_Tables set table_status = 1 where table_number = @number_table;";
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@number_table", Tab);
+                            // command.Parameters.AddWithValue("@number", TableStatus.NO_EMPTY);
+                command.ExecuteNonQuery(); 
+        }catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            finally{
+                connection.Close();
+            }
+        }
             
         }
     }

@@ -9,10 +9,10 @@ address char(50),
 phone char(20),
 role int not null default 1
 );
-
+select * from Cashiers;
 drop table Cashiers;
 
-select * from Cashiers;
+select * from Cashiers,Orders where Cashiers.cashier_id = Orders.cashier_id and  Orders.order_status = 2 and Orders.table_number = 1;
 
 update Cashiers set phone='0123467891' where cashier_id = 2;
 insert into Cashiers(userName,pass,cashier_name,address,phone,role)
@@ -31,11 +31,12 @@ item_quantity int not null,
 item_description char(100)
 );
 
-Insert into Items(item_name,item_price,item_quantity,item_description)
-value ('Coffee Ice Black',20000,100,'good'),
-('Milk Coffee',20000,100,'noproblem'),
-('Milk Tea',20000,100,'sweet');
-select * from Items where item_id = 1;
+Insert into Items(item_name,item_price,item_quantity)
+value ('C2',10000,100),
+('Apple Water',21000,100),
+('Thai Milk Tea',25000,100);
+select * from Items ;
+update Items set item_quantity = 100  where item_id =7;
 
 select item_name as Name from Items where item_name like '%Milk%';
 drop table Items;
@@ -65,10 +66,13 @@ order_date datetime default now() not null,
 order_status int not null,
 constraint fk_cashier_id foreign key (cashier_id) references Cashiers(cashier_id)
 );
+select * from OrderDetails;
+insert into OrderDetails(order_id,item_id,item_price,quantity) values (69,1,1,1),(69,1,1,1);
 drop table Orders;
 select order_id from Orders order by order_id desc limit 1;
 Alter table Orders Add cashier_id int not null;
 select * from Orders;
+update Coffee_Tables set table_status = 1 where table_number = 1;
 
 Alter table Orders add constraint fk_table foreign key (table_number) references Coffee_Tables(table_number);
 ALTER TABLE Orders
@@ -78,6 +82,7 @@ Drop foreign key fk_table;
 insert into Orders (table_number, cashier_id, order_status) values (1,2,1);
 select * from Orders;
 select * from Coffee_Tables;
+select * from OrderDetails where order_id = 22;
 
 create table OrderDetails(
 	order_id int not null,
@@ -89,8 +94,7 @@ create table OrderDetails(
     constraint fk_OrderDetails_Items foreign key(item_id) references Items(item_id)
     );
     drop table OrderDetails;
-    ALTER TABLE OrderDetails
-	Drop foreign key fk_OrderDetails_Orders;
+    ALTER TABLE OrderDetails Drop foreign key fk_OrderDetails_Orders;
     ALTER TABLE OrderDetails ADD constraint fk_OrderDetails_Orders foreign key(order_id) references Orders(order_id);
     insert into Items(item_name,item_price,item_quantity,item_description)
 value("Brown Coffee",20000,10,"");
@@ -114,10 +118,17 @@ create trigger tg_CheckAmount
         end if;
     end $$
 delimiter ;
-select * from Orders;
+select * from Orders where table_number = 1 and order_id = 2;
     select * from OrderDetails;
     select last_insert_id() as order_id;
     select table_number from Coffee_Tables order by table_number desc limit 1;
     select table_number from Coffee_Tables where table_status = 1;
     select table_number from Coffee_Tables where table_status = 1 and table_number = 4;
+    select * from Orders where order_id = 22;
+    select OrderDetails.order_id,OrderDetails.item_id,OrderDetails.item_price,OrderDetails.quantity,Items.item_name
+    from OrderDetails inner join Items on OrderDetails.item_id = Items.item_id where order_id = 22;
+    select OrderDetails.order_id,OrderDetails.item_id,OrderDetails.item_price,OrderDetails.quantity,Items.item_name,Orders.cashier_id,Orders.table_number,Orders.order_date from OrderDetails,Orders,Items where OrderDetails.item_id = Items.item_id and OrderDetails.order_id = Orders.order_id and Orders.order_id = 22;
+    select OrderDetails.order_id,OrderDetails.item_id,OrderDetails.item_price,OrderDetails.quantity,Items.item_name,Orders.cashier_id,Orders.table_number,Orders.order_date,Orders.order_status from OrderDetails,Orders,Items where OrderDetails.item_id = Items.item_id and OrderDetails.order_id = Orders.order_id and Orders.table_number = 2 and Orders.order_status = 2;
     update Coffee_Tables set table_status = @number where table_number = "+order.table+";
+    select * from Orders;
+    select * from Cashiers,Orders,OrderDetails where Cashiers.cashier_id = Orders.cashier_id and Orders.order_id = OrderDetails.order_id and Orders.order_status = 2 and Orders.table_number = 1;
