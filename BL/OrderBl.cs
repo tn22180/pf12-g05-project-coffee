@@ -49,5 +49,13 @@ namespace BL
             bool result = odl.UpdateOrder(order);
             return result;
         }
+        public bool CheckItemInList(Order order, int itemId)
+        {
+            return odl.CheckItemInList(order,itemId);
+        }
+        public void UpdateQuantity(int quantity, int orderId, int itemId)
+        {
+            odl.UpdateQuantity(quantity,orderId,itemId);
+        }
     }
 }

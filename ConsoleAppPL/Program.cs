@@ -172,9 +172,9 @@ namespace ConsoleAppPL
                                 TableNumbers table1 = obl.GetTableByNumberr(tab);
                                 if(table1.TableStatus == TableStatus.NO_EMPTY)
                                 {  Order order1 = new Order();
-                                    
+                                    Console.WriteLine("Update Order");
                                     order1 = obl.GetOrderByTableAndStatus(tab,OrderStatus.ORDER_INPROGRESS);
-                                    order1.ListItem = order.ListItem;
+                                    
                                      do{
                                          
                                         int itemID = 0;
@@ -182,9 +182,20 @@ namespace ConsoleAppPL
                                         Item i = null;
                                         do{
                                             try{
+                                                lst = ibl.GetAll();
+                                                Console.WriteLine(" +------------------------------------------------------+");
+                                                Console.WriteLine(" | ID | Name Item                 | Price    | Quantity |");
+                                                Console.WriteLine(" +------------------------------------------------------+");
+                                                
+                                                foreach(Item it in lst)
+                                                {
+                                                Console.WriteLine(" | {0,-2} | {1,-25} | {2,-6} | {3,-8} |", it.ItemId, it.ItemName, String.Format(money, "{0:c}", it.ItemPrice), it.ItemQuantity);
+                                                }
+                                                Console.WriteLine(" +------------------------------------------------------+");
                                                 Console.Write("Input id item want to order : ");
                                                 itemID = Int32.Parse(Console.ReadLine());
                                                 i = ibl.SearchById(itemID);
+                                                Console.WriteLine(i.ItemName + ": " +String.Format(money, "{0:c}", i.ItemPrice));
                                                 if(i == null)
                                                 {
                                                     Console.WriteLine("Don't have id Item : "+itemID);
@@ -208,7 +219,6 @@ namespace ConsoleAppPL
                                         int quantity = 0;
                                         do{
                                             bool checkitem = false;
-                                            int j = 0;
                                             
                                             try{
                                                 Console.Write("Input quantity: ");
@@ -218,17 +228,18 @@ namespace ConsoleAppPL
                                                     Console.WriteLine("The quantity you need in stock is out");
                                                     checkQuantity = false;
                                                 }
+                                                else if(quantity <= 0)
+                                                {
+                                                     Console.WriteLine("The quantity > 0");
+                                                    checkQuantity = false;
+                                                }
                                                 else{
                                         
-                                                   for(j = 0;j < order1.ListItem.Count;j++)
-                                                    {
-                                                        if(itemID == order1.ListItem[j].ItemId)
-                                                        {
-                                                            checkitem = true;
-                                                            order1.ListItem[j].ItemQuantity += quantity;
-
-                                                        }
-                                                    }
+                                                   if(obl.CheckItemInList(order1,itemID)){
+                                                       Console.WriteLine("yes");
+                                                       obl.UpdateQuantity(quantity,order1.OrderId,itemID);
+                                                       checkitem = true;
+                                                   }
                                                     if(!checkitem)
                                                     {   
                                                         order1.ListItem.Add(i);
@@ -237,7 +248,7 @@ namespace ConsoleAppPL
                                                     checkQuantity = true;
                                                 }
                                             }catch{
-                                                Console.WriteLine("Quantity must to > 0..!");
+                                                Console.WriteLine("Your choice is wrong!");
                                                 Console.WriteLine("Input Again ....");
                                                 continue;
                                             }
@@ -248,6 +259,7 @@ namespace ConsoleAppPL
                                     Console.WriteLine("Update Order: " + (obl.UpdateOrder(order1) ? "completed!" : "not complete!")); 
                                 }
                                 else{
+                                    Console.WriteLine("Create New Order");
                                    order.Table = table1; 
                                    checkTabEmpty = true;
                                     // insert cashierinfo
@@ -259,6 +271,16 @@ namespace ConsoleAppPL
                                         Item i = null;
                                         do{
                                             try{
+                                                lst = ibl.GetAll();
+                                                Console.WriteLine(" +------------------------------------------------------+");
+                                                Console.WriteLine(" | ID | Name Item                 | Price    | Quantity |");
+                                                Console.WriteLine(" +------------------------------------------------------+");
+                                                
+                                                foreach(Item it in lst)
+                                                {
+                                                Console.WriteLine(" | {0,-2} | {1,-25} | {2,-6} | {3,-8} |", it.ItemId, it.ItemName, String.Format(money, "{0:c}", it.ItemPrice), it.ItemQuantity);
+                                                }
+                                                Console.WriteLine(" +------------------------------------------------------+");
                                                 Console.Write("Input id item want to order : ");
                                                 itemID = Int32.Parse(Console.ReadLine());
                                                 i = ibl.SearchById(itemID);
@@ -319,7 +341,7 @@ namespace ConsoleAppPL
                                                 }
                                                 
                                             }catch{
-                                                Console.WriteLine("Quantity must to > 0..!");
+                                                Console.WriteLine("Your choice is wrong!");
                                                 Console.WriteLine("Input Again ....");
                                                 continue;
                                             }
@@ -417,7 +439,7 @@ namespace ConsoleAppPL
                                         Console.WriteLine("|                        INVOICE                          |");                      
                                         Console.WriteLine("===========================================================");
                                         Console.WriteLine("| ID: " + orderInfo.CashierInfo.CashierId+"                                                   |");
-                                        Console.WriteLine("| Name: " + orderInfo.CashierInfo.CashierName    +"     Phone: "+ orderInfo.CashierInfo.Phone+"             |");
+                                        Console.WriteLine("| Name Cashier: " + orderInfo.CashierInfo.CashierName    +"     Phone: "+ orderInfo.CashierInfo.Phone+"     |");
                                         Console.WriteLine("| OrderId : "+ orderInfo.OrderId+"                                            |");
                                         Console.WriteLine("| Table : "+ orderInfo.Table.TableNumber+ "    Date Time: "+ orderInfo.OrderDate+"             |");
                                         Console.WriteLine("+---------------------------------------------------------+");

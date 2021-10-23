@@ -140,6 +140,58 @@ using MySql.Data.MySqlClient;
             }
             return result; 
         }
+        public void UpdateQuantity(int quantity, int orderId, int itemId)
+        {
+             try{
+                //  Update quantity in OrderDetails
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.Connection = connection;
+                command.CommandText = "update OrderDetails set quantity = quantity + @quan where order_id = @orderId and item_id = @itemId;";
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@quan", quantity);
+                command.Parameters.AddWithValue("@orderId", orderId);
+                command.Parameters.AddWithValue("@itemId", itemId);
+                command.ExecuteNonQuery();
+                // Update quantity in Items
+                command.CommandText = "update Items set item_quantity = item_quantity - @quantity where item_id = " + itemId + ";";
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@quantity", quantity);
+                command.ExecuteNonQuery();
+
+             }
+            catch(Exception e){
+                Console.WriteLine(e);
+            }
+            finally{
+                connection.Close();
+            }
+        }
+        public bool CheckItemInList(Order order, int itemId){
+            bool check = false;
+            try{
+                connection.Open();
+                MySqlCommand command = connection.CreateCommand();
+                command.Connection = connection;
+                command.CommandText = "select * from OrderDetails where order_id = @orderId and item_id = @itemId;";
+                command.Parameters.Clear();
+                command.Parameters.AddWithValue("@orderId", order.OrderId);
+                command.Parameters.AddWithValue("@itemId", itemId);
+                MySqlDataReader reader = command.ExecuteReader();
+                if(reader.Read())
+                {
+                    check = true;
+                }
+                reader.Close();
+            }
+            catch(Exception e){
+                Console.WriteLine(e);
+            }
+            finally{
+                connection.Close();
+            }
+            return check;
+        }
         public bool UpdateOrder(Order order)
         {   
             bool result = false;

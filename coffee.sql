@@ -72,6 +72,7 @@ drop table Orders;
 select order_id from Orders order by order_id desc limit 1;
 Alter table Orders Add cashier_id int not null;
 select * from Orders;
+select * from OrderDetails where order_id = 17 ;
 update Coffee_Tables set table_status = 1 where table_number = 1;
 
 Alter table Orders add constraint fk_table foreign key (table_number) references Coffee_Tables(table_number);
