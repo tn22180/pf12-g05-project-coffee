@@ -55,7 +55,7 @@ namespace ConsoleAppPL
             // cashier = new Cashier(){Username = userName, Password = pass};
                  cashier = bl.Login(userName, pass);
                 if(cashier.Role <= 0){
-                    Console.WriteLine("Can't login to System, Try again...");
+                    Console.WriteLine("   Can't login to System, Try again...");
                      }
             }while(cashier.Role <= 0);  
                 
@@ -66,8 +66,6 @@ namespace ConsoleAppPL
                 switch(mainChoose)
                 {
                     case 1:
-                    Console.WriteLine(logo1);
-                    Console.WriteLine(line);
                     do
                     {   
                         childChoose = menu.MenuChild();
@@ -80,10 +78,14 @@ namespace ConsoleAppPL
                                     Item item = ibl.SearchById(id);
                                     if(item != null)
                                     {
-                                    Console.WriteLine("Item Name: " +item.ItemName);
-                                    Console.WriteLine("Item Price: " +item.ItemPrice);
-                                    Console.WriteLine("Item Quantity: " +item.ItemQuantity);
-                                    Console.WriteLine("Item Description: " +item.ItemDescription);
+                                    Console.WriteLine("+---------------------------------------------------------------+");
+                                    Console.WriteLine("|                           Info Item                           |");
+                                    Console.WriteLine("+---------------------------------------------------------------+");
+                                    Console.WriteLine("| Item Name: {0,-18}                                 |" ,item.ItemName);
+                                    Console.WriteLine("| Item Price: {0,-18}                                |" ,item.ItemPrice);
+                                    Console.WriteLine("| Item Quantity: {0,-18}                             |" ,item.ItemQuantity);
+                                    Console.WriteLine("| Item Description: {0,-18}                          |" ,item.ItemDescription);
+                                    Console.WriteLine("+---------------------------------------------------------------+");
 
                                     }
                                     else{
@@ -236,7 +238,6 @@ namespace ConsoleAppPL
                                                 else{
                                         
                                                    if(obl.CheckItemInList(order1,itemID)){
-                                                       Console.WriteLine("yes");
                                                        obl.UpdateQuantity(quantity,order1.OrderId,itemID);
                                                        checkitem = true;
                                                    }
@@ -256,7 +257,7 @@ namespace ConsoleAppPL
                                             Console.Write("Do you want to be continue ? (Y/N) : ");
                                             c = Convert.ToChar(Console.ReadLine());
                                     }while (c == 'y' || c == 'Y');
-                                    Console.WriteLine("Update Order: " + (obl.UpdateOrder(order1) ? "completed!" : "not complete!")); 
+                                    Console.WriteLine("Update Order: " + (obl.UpdateOrder(order1) ? "completed!" : "completed")); 
                                 }
                                 else{
                                     Console.WriteLine("Create New Order");
@@ -449,7 +450,7 @@ namespace ConsoleAppPL
                                         {
                                             Console.WriteLine("| {0,-18} | {1,-6} | {2,-8} | {3,-11}  |", i._ItemName, String.Format(money, "{0:c}", i._ItemPrice), i._ItemQuantity, String.Format(money ,"{0:c}", total = (i._ItemQuantity*i._ItemPrice)));
                                             Console.WriteLine("+---------------------------------------------------------+");
-                                            totalMoney += total;
+                                          
                                         }
                                     
                                         Console.WriteLine("| Total Money                              | {0,-12} |",String.Format(money, "{0:c}", totalMoney));;

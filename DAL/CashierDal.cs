@@ -5,18 +5,19 @@ using MySql.Data.MySqlClient;
      public class CashierDal
      {
              MySqlConnection connection = DbHelper.GetConnection();
-             private MySqlDataReader reader;
+            //  private MySqlDataReader reader;
     
          public Cashier Login(string username, string pass)
          {
              Cashier cashier = new Cashier();
-             string sql = "select * from Cashiers where userName = @UserName and pass = @Password";
              try{
                  connection.Open();
-                 MySqlCommand command = new MySqlCommand(sql, connection);
+                 MySqlCommand command = connection.CreateCommand();
+                 command.Connection = connection;
+                 command.CommandText = "select * from Cashiers where userName = @UserName and pass = @Password";
                  command.Parameters.AddWithValue("@UserName", username);
                  command.Parameters.AddWithValue("@Password", Md5Algorithms.CreateMD5(pass));
-                 reader = command.ExecuteReader();
+                 MySqlDataReader reader = command.ExecuteReader();
                     if(reader.Read())
                         {
                             cashier = GetCashier(reader);

@@ -318,7 +318,6 @@ using MySql.Data.MySqlClient;
             { 
               Order order = new Order() ;
                 order.Table = new TableNumbers();
-                order.ListItem = new List<Item>();
                 order.CashierInfo = new Cashier();
                 order.OrderId = reader.GetInt32("order_id");
                 order.OrderDate = reader.GetDateTime("order_date");

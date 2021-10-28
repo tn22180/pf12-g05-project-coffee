@@ -9,7 +9,7 @@ namespace DALTest
     { 
           Order order = new Order();
           OrderDal odl = new OrderDal();
-         
+        [Fact]
         public void OrderTest1()
         {
             order.Table = new TableNumbers();
@@ -24,7 +24,39 @@ namespace DALTest
                 i.ItemQuantity = 1;
             }
             bool result = odl.CreateOrder(order);
-            Assert.True(result == true);
+            Assert.True(result != true);
         }
+        [Theory]
+        [InlineData(1,1,1,1,1,1)]
+        [InlineData(1,2,1,1,1,1)]
+        [InlineData(1,1,2,1,1,1)]
+        [InlineData(1,1,1,2,1,1)]
+        [InlineData(1,1,1,1,2,1)]
+        [InlineData(1,1,1,1,1,2)]
+        [InlineData(2,1,1,1,1,1)]
+        [InlineData(2,2,1,1,1,1)]
+        [InlineData(2,1,2,1,1,1)]
+        [InlineData(2,1,1,2,1,1)]
+        [InlineData(2,1,1,1,2,1)]
+        [InlineData(2,1,1,1,1,2)]
+
+        public void OrderTest2(int tab, int casId, int orderStatus, int OrID, int itemId, int quantity)
+        {
+            order.Table = new TableNumbers();
+            order.CashierInfo = new Cashier();
+            order.Table.TableNumber = tab;
+            order.CashierInfo.CashierId = casId;
+            order.OrderStatus = orderStatus;
+            order.OrderId = OrID;
+            foreach(var i in order.ListItem)
+            {
+                i.ItemId = itemId;
+                i.ItemQuantity = quantity;
+            }
+            bool result = odl.CreateOrder(order);
+            Assert.True(result != true);
+        }
+
+
     }
 }

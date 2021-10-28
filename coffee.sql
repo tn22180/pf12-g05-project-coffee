@@ -9,7 +9,7 @@ address char(50),
 phone char(20),
 role int not null default 1
 );
-select * from Cashiers;
+select * from Items;
 drop table Cashiers;
 
 select * from Cashiers,Orders where Cashiers.cashier_id = Orders.cashier_id and  Orders.order_status = 2 and Orders.table_number = 1;
@@ -36,7 +36,7 @@ value ('C2',10000,100),
 ('Apple Water',21000,100),
 ('Thai Milk Tea',25000,100);
 select * from Items ;
-update Items set item_quantity = 100  where item_id =7;
+update Items set item_quantity = 100  where item_id =11;
 
 select item_name as Name from Items where item_name like '%Milk%';
 drop table Items;
@@ -61,7 +61,7 @@ select order_date from Orders where order_id = 5;
 create table Orders(
 order_id int primary key auto_increment,
 cashier_id int not null,
-table_number int not null, 
+table_number int not null,
 order_date datetime default now() not null,
 order_status int not null,
 constraint fk_cashier_id foreign key (cashier_id) references Cashiers(cashier_id)
@@ -71,9 +71,11 @@ insert into OrderDetails(order_id,item_id,item_price,quantity) values (69,1,1,1)
 drop table Orders;
 select order_id from Orders order by order_id desc limit 1;
 Alter table Orders Add cashier_id int not null;
-select * from Orders;
-select * from OrderDetails where order_id = 17 ;
+select * from OrderDetails where order_id = 21;
+select * from OrderDetails where order_id = 21 and item_id = 1;
+update OrderDetails set quantity = quantity + 2 where order_id = 21 and item_id = 1;
 update Coffee_Tables set table_status = 1 where table_number = 1;
+
 
 Alter table Orders add constraint fk_table foreign key (table_number) references Coffee_Tables(table_number);
 ALTER TABLE Orders

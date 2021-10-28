@@ -39,8 +39,9 @@ namespace ConsoleAppPL
             short choice = 0;
             string line = "===================================================================================";
             Console.WriteLine(line);
-             Console.WriteLine(logo);
-            Console.WriteLine("Coffee and Food Management");
+            Console.WriteLine(logo);
+            Console.WriteLine(line);
+            Console.WriteLine("Coffee and Drinks Management");
             Console.WriteLine(line);
             Console.WriteLine("        1. Search Item By Id");
             Console.WriteLine("        2. Search Item by Name");
