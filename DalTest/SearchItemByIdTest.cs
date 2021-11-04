@@ -20,12 +20,36 @@ namespace DALTest
             Assert.True(i!= null);
         }
         [Fact]
+         public void SearchByIdTest2()
+        {   
+            
+            item.ItemId = -1;    
+            Item i = idal.SearchById(item.ItemId);
+            Assert.True(i== null);
+        }
+        [Fact]
         public void SearchByNameTest1()
         {   
             int itemFilter = 1;
             item.ItemName = "Milk Tea";
             lis = idal.GetItems(itemFilter,new Item{ItemName = item.ItemName});
             Assert.True(lis != null);
+        }
+        [Fact]
+        public void SearchByNameTest3()
+        {   
+            int itemFilter = 1;
+            item.ItemName = "+++";
+            lis = idal.GetItems(itemFilter,new Item{ItemName = item.ItemName});
+            Assert.NotNull(lis);
+        }
+        [Fact]
+        public void SearchByNameTest4()
+        {   
+            int itemFilter = 0;
+            item.ItemName = "+++";
+            lis = idal.GetItems(itemFilter,new Item{ItemName = item.ItemName});
+            Assert.NotNull(lis);
         }
         [Theory]
        [InlineData(2)]
@@ -37,7 +61,7 @@ namespace DALTest
         {
             item.ItemId = id;
             Item it = idal.SearchById(item.ItemId);
-             Assert.True(it != null);
+            Assert.NotNull(it);
         }
         [Theory]
        [InlineData(1,"Red Bull")]
@@ -51,6 +75,42 @@ namespace DALTest
             item.ItemName = name;
             lis = idal.GetItems(itemFilter,new Item{ItemName = item.ItemName});
             Assert.True(lis != null);
+        }
+         [Theory]
+       [InlineData(0)]
+       [InlineData(-1)]
+       [InlineData(-100)]
+       public void SearchByIdTest4(int id)
+        {
+            item.ItemId = id;
+            Item i = idal.SearchById(item.ItemId);
+            Assert.True(i == null);
+        }
+        [Theory]
+       [InlineData(1,"+++")]
+       [InlineData(1,"!!!!")]
+       [InlineData(1,"")]
+       [InlineData(1," ")]
+       [InlineData(1,"e")]
+       public void SearchByNameTest5(int itemFilter1 ,string name)
+        {   
+            int itemFilter = itemFilter1;
+            item.ItemName = name;
+            lis = idal.GetItems(itemFilter,new Item{ItemName = item.ItemName});
+            Assert.NotNull(lis);
+        }
+        [Theory]
+       [InlineData(0,"Red Bull")]
+       [InlineData(0,"Brown Coffee")]
+       [InlineData(0,"Sting")]
+       [InlineData(0,"Green Tea Latte")]
+       [InlineData(0,"Coffee Latte")]
+       public void SearchByNameTest6(int itemFilter1 ,string name)
+        {   
+            int itemFilter = itemFilter1;
+            item.ItemName = name;
+            lis = idal.GetItems(itemFilter,new Item{ItemName = item.ItemName});
+            Assert.NotNull(lis);
         }
     }
 }

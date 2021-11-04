@@ -60,17 +60,21 @@ namespace ConsoleAppPL
             }while(cashier.Role <= 0);  
                 
                 if(cashier.Role > 0){
+                    Console.Clear();
                 do{
                 Menu menu = new Menu();
                 mainChoose = menu.MainMenu();
                 switch(mainChoose)
                 {
                     case 1:
+                    Console.Clear();
                     do
                     {   
                         childChoose = menu.MenuChild();
                         switch(childChoose){
+                            
                             case 1:
+                                Console.Clear();
                                 Console.Write("Enter Id Item you want to search : ");
                                 int id;
                                 if (Int32.TryParse(Console.ReadLine(), out id))
@@ -96,9 +100,11 @@ namespace ConsoleAppPL
                                     Console.WriteLine("Your Choice is wrong !");
                                     }
                                 Console.WriteLine("\n    Press Enter key to back menu...");
-                                Console.ReadLine();
+                                Console.ReadKey();
+                                Console.Clear();
                                 break;
                             case 2:
+                                Console.Clear();
                                 bool checkName = true;
                                 string name = "";
                                 do{
@@ -132,8 +138,10 @@ namespace ConsoleAppPL
                                     }
                                     
                                 }while(checkName != true);
+                                Console.Clear();
                                     break;
                             case 3:
+                                Console.Clear();
                                 lst = ibl.GetAll();
                                  Console.WriteLine(" +------------------------------------------------------------------------------+");
                                  Console.WriteLine(" | ID | Name Item                 | Price    | Quantity | Description           |");
@@ -147,11 +155,14 @@ namespace ConsoleAppPL
 
                                 Console.WriteLine("\n    Press Enter key to back menu...");
                                 Console.ReadLine();
+                                Console.Clear();
                                 break;
                         }
+                         Console.Clear();
                     }while(childChoose != 4);
                     break;
                     case 2:
+                        Console.Clear();
                         Console.WriteLine(logo2);
                         Console.WriteLine(line);
                         Order order = new Order();
@@ -361,9 +372,11 @@ namespace ConsoleAppPL
                                        break;
                                     }
                           }while( checkTabEmpty != true || tab == 0);
+                          Console.Clear();
                         // insert cashierinfo
                     break;
                     case 3:
+                        Console.Clear();
                         Console.WriteLine(logo3);
                         Console.WriteLine(line);
                         List<TableNumbers> ltb1 ; 
@@ -395,28 +408,32 @@ namespace ConsoleAppPL
                                             orderInfo = obl.GetOrderByTableAndStatus(tabl,OrderStatus.ORDER_INPROGRESS);
                                     if(orderInfo != null)
                                     {
-                                        Console.WriteLine("===========================================================");
-                                        Console.WriteLine("|                        INVOICE                          |");                      
-                                        Console.WriteLine("===========================================================");
-                                        Console.WriteLine("| OrderId : "+ orderInfo.OrderId+"                                            |");
-                                        Console.WriteLine("| Table : "+ orderInfo.Table.TableNumber+ "    Date Time: "+ orderInfo.OrderDate+"             |");
+                                        Console.WriteLine("=================================================================");
+                                        Console.WriteLine("|                             INVOICE                           |");                      
+                                        Console.WriteLine("=================================================================");             
+                                        Console.WriteLine("| OrderId : "+ orderInfo.OrderId+"                                                  |");
+                                        Console.WriteLine("| Table : "+ orderInfo.Table.TableNumber+ "    Date: "+ orderInfo.OrderDate+"                        |");
                                     }
                                 
                                 List<OrderDetail> od = obl.GetOrderDetailByOrderId(orderInfo.OrderId);   
                                 double total = 0,totalMoney = 0;
                                 if(od != null){
-                                    Console.WriteLine("+---------------------------------------------------------+");
-                                    Console.WriteLine("| Name Item          | Price    | Quantity | Total        |");
-                                    Console.WriteLine("+---------------------------------------------------------+");
-                                    foreach(var i in od)
-                                    {
-                                        Console.WriteLine("| {0,-18} | {1,-6} | {2,-8} | {3,-11}  |", i._ItemName, String.Format(money, "{0:c}", i._ItemPrice), i._ItemQuantity, String.Format(money ,"{0:c}", total = (i._ItemQuantity*i._ItemPrice)));
-                                        Console.WriteLine("+---------------------------------------------------------+");
-                                        totalMoney += total;
-                                    }
-                                
-                                    Console.WriteLine("| Total Money                              | {0,-12} |",String.Format(money, "{0:c}", totalMoney));;
-                                    Console.WriteLine("+---------------------------------------------------------+");
+                                        Console.WriteLine("+---------------------------------------------------------------+");
+                                         Console.WriteLine("| SL  | Item               |   Price  | Quantity |        Total |");
+                                        Console.WriteLine("+---------------------------------------------------------------+");
+                                        int count = 1;
+                                        foreach(var i in od)
+                                        {   
+                                            Console.WriteLine("| {0,-3} | {1,-18} |  {2,-6}| {3,-8} |     {4,-8} |",count, i._ItemName, String.Format(money, "{0:c}", i._ItemPrice), i._ItemQuantity, String.Format(money ,"{0:c}", total = (i._ItemQuantity*i._ItemPrice)));
+                                            Console.WriteLine("+---------------------------------------------------------------+");
+                                            totalMoney += total;
+                                            count++;
+                                          
+                                        }
+                                         Console.WriteLine("|                                                               |");
+                                        Console.WriteLine("|                                             Total:  {0,-10}|",String.Format(money, "{0:c}", totalMoney));;
+                                         Console.WriteLine("=================================================================");
+
                                 }
                            
                                 Console.WriteLine("1. Payment");
@@ -425,36 +442,39 @@ namespace ConsoleAppPL
                                 do
                                 {
                                     Console.Write("Your Choice :");
+
                                     try{
                                         choice = Int16.Parse(Console.ReadLine());
-                                    
+                                        Console.Clear();
                                 
                                 switch(choice)
                                 {
                                 case 1:
                                 
                                         
-                                        Console.WriteLine("===========================================================");
-                                        Console.WriteLine("|                     Coffee Tuan Ha                      |");
-                                        Console.WriteLine("===========================================================");
-                                        Console.WriteLine("|                        INVOICE                          |");                      
-                                        Console.WriteLine("===========================================================");
-                                        Console.WriteLine("| ID: " + orderInfo.CashierInfo.CashierId+"                                                   |");
-                                        Console.WriteLine("| Name Cashier: " + orderInfo.CashierInfo.CashierName    +"     Phone: "+ orderInfo.CashierInfo.Phone+"     |");
-                                        Console.WriteLine("| OrderId : "+ orderInfo.OrderId+"                                            |");
-                                        Console.WriteLine("| Table : "+ orderInfo.Table.TableNumber+ "    Date Time: "+ orderInfo.OrderDate+"             |");
-                                        Console.WriteLine("+---------------------------------------------------------+");
-                                        Console.WriteLine("| Name Item          | Price    | Quantity | Total        |");
-                                        Console.WriteLine("+---------------------------------------------------------+");
+                                        Console.WriteLine("=================================================================");
+                                        Console.WriteLine("|                          Coffee Tuan Ha                       |");
+                                        Console.WriteLine("=================================================================");
+                                        Console.WriteLine("|                             INVOICE                           |");                      
+                                        Console.WriteLine("=================================================================");             
+                                        Console.WriteLine("| OrderId : "+ orderInfo.OrderId+"                                                  |");
+                                        Console.WriteLine("| Table : "+ orderInfo.Table.TableNumber+ "    Date: "+ orderInfo.OrderDate+"                        |");
+                                        Console.WriteLine("| Name Cashier: " + orderInfo.CashierInfo.CashierName    +"                                 |");
+                                        Console.WriteLine("+---------------------------------------------------------------+");
+                                        Console.WriteLine("| SL  | Item               |   Price  | Quantity |        Total |");
+                                        Console.WriteLine("+---------------------------------------------------------------+");
+                                        int count = 1;
                                         foreach(var i in od)
                                         {
-                                            Console.WriteLine("| {0,-18} | {1,-6} | {2,-8} | {3,-11}  |", i._ItemName, String.Format(money, "{0:c}", i._ItemPrice), i._ItemQuantity, String.Format(money ,"{0:c}", total = (i._ItemQuantity*i._ItemPrice)));
-                                            Console.WriteLine("+---------------------------------------------------------+");
+                                            Console.WriteLine("| {0,-3} | {1,-18} |  {2,-6}| {3,-8} |     {4,-8} |",count, i._ItemName, String.Format(money, "{0:c}", i._ItemPrice), i._ItemQuantity, String.Format(money ,"{0:c}", total = (i._ItemQuantity*i._ItemPrice)));
+                                            Console.WriteLine("+---------------------------------------------------------------+");
+                                            count++;
                                           
                                         }
-                                    
-                                        Console.WriteLine("| Total Money                              | {0,-12} |",String.Format(money, "{0:c}", totalMoney));;
-                                        Console.WriteLine("+---------------------------------------------------------+");
+                                         Console.WriteLine("|                                                               |");
+                                         Console.WriteLine("|                                             Total:  {0,-10}|",String.Format(money, "{0:c}", totalMoney));;
+                                         Console.WriteLine("=================================================================");
+
                                         Console.WriteLine("          Thank you for buying our products ... ");
                                         Console.WriteLine("\n    Press Enter key to back menu...");
                                         Console.ReadLine();
@@ -475,7 +495,7 @@ namespace ConsoleAppPL
                                 }
                             }while(checkTab != true || tabl == 0);
                             
-                          
+                          Console.Clear();
                     break;
                 }
                 }while(mainChoose != 4);
